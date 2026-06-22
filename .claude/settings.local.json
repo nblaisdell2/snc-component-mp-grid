@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(snc --version)",
+      "PowerShell(snc ui-component --help 2>&1)",
+      "PowerShell(snc ui-component deploy 2>&1 | Tee-Object -Variable out; echo \"EXITCODE=$LASTEXITCODE\")"
+    ]
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "components": {
+    "x-1295779-metrics-grid-uic": {
+      "innerComponents": [],
+      "uiBuilder": {
+        "associatedTypes": [
+          "global.core",
+          "global.landing-page"
+        ],
+        "label": "Metrics Grid",
+        "tileIcon": "./tile-icon/generic-tile-icon.svg",
+        "description": "Lays a metrics array into a 12-column grid (width 25/33/50/75/100 maps to span 3/4/6/9/12), in order, wrapping with grid-auto-flow row dense, and renders a metric-dispatcher per metric. Collapses to a single column below a configurable width. Pure presentation — never fetches its own data.",
+        "category": "primitives"
+      },
+      "properties": [
+        {
+          "name": "metrics",
+          "label": "Data · Metrics",
+          "description": "Array of metrics to lay out — the resolver payload's `metrics` (build spec §5.2). Each item: { id, title, order, width, viz_type, display_config, data }. The grid sorts by `order` and passes each item to a metric-dispatcher. Leave empty to show built-in sample metrics.",
+          "fieldType": "json"
+        },
+        {
+          "name": "columns",
+          "label": "Layout · Columns",
+          "description": "Number of grid columns. The width→span mapping (25/33/50/75/100 → 3/4/6/9/12) assumes 12; change only if you also rethink the mapping.",
+          "fieldType": "number",
+          "defaultValue": 12
+        },
+        {
+          "name": "gap",
+          "label": "Layout · Gap",
+          "description": "Gap between cards. CSS length; a bare number is treated as pixels.",
+          "fieldType": "string",
+          "defaultValue": "16px"
+        },
+        {
+          "name": "collapseBelow",
+          "label": "Layout · Collapse below (px)",
+          "description": "When the grid's own width is below this many pixels, every card collapses to full width (single column). 0 = never collapse.",
+          "fieldType": "number",
+          "defaultValue": 900
+        },
+        {
+          "name": "dispatcherTag",
+          "label": "Routing · Dispatcher tag",
+          "description": "Custom element tag used to render each metric. Defaults to the metric-dispatcher.",
+          "fieldType": "string",
+          "defaultValue": "x-1295779-metric-dispatcher-uic"
+        },
+        {
+          "name": "vizMap",
+          "label": "Routing · Viz type → component",
+          "description": "Optional viz_type → component-tag overrides passed through to each dispatcher (see Metric Dispatcher). Leave blank to use the dispatcher defaults.",
+          "fieldType": "json"
+        },
+        {
+          "name": "showCardChrome",
+          "label": "Card · Show card chrome",
+          "description": "Wrap each metric in a card (background, border, radius, shadow). Off = bare cells.",
+          "fieldType": "boolean",
+          "defaultValue": true
+        },
+        {
+          "name": "showCardTitle",
+          "label": "Card · Show card title",
+          "description": "Render each metric's title at the top of its card.",
+          "fieldType": "boolean",
+          "defaultValue": true
+        },
+        {
+          "name": "cardBackground",
+          "label": "Card · Background",
+          "description": "Card background color (when card chrome is on).",
+          "fieldType": "string",
+          "defaultValue": "#ffffff"
+        },
+        {
+          "name": "cardBorderColor",
+          "label": "Card · Border color",
+          "description": "Card border color (when card chrome is on and border width > 0).",
+          "fieldType": "string",
+          "defaultValue": "#e5e7eb"
+        },
+        {
+          "name": "cardBorderWidth",
+          "label": "Card · Border width",
+          "description": "Card border thickness in pixels. 0 = no border.",
+          "fieldType": "number",
+          "defaultValue": 1
+        },
+        {
+          "name": "cardRadius",
+          "label": "Card · Corner radius",
+          "description": "Card rounded corners. CSS length; a bare number is treated as pixels.",
+          "fieldType": "string",
+          "defaultValue": "8px"
+        },
+        {
+          "name": "cardPadding",
+          "label": "Card · Padding",
+          "description": "Padding inside each card. CSS length; a bare number is treated as pixels.",
+          "fieldType": "string",
+          "defaultValue": "16px"
+        },
+        {
+          "name": "cardMinHeight",
+          "label": "Card · Min height",
+          "description": "Minimum height of each card. CSS length; a bare number is treated as pixels.",
+          "fieldType": "string",
+          "defaultValue": "120px"
+        },
+        {
+          "name": "cardShadow",
+          "label": "Card · Drop shadow",
+          "description": "Apply a soft drop shadow to each card (when card chrome is on).",
+          "fieldType": "boolean",
+          "defaultValue": true
+        },
+        {
+          "name": "emptyMessage",
+          "label": "Display · Empty message",
+          "description": "Text shown when there are no metrics to display.",
+          "fieldType": "string",
+          "defaultValue": "No metrics to display."
+        }
+      ],
+      "actions": []
+    }
+  },
+  "scopeName": "x_1295779_grid_0"
+}

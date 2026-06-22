@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.snc.npm</groupId>
+        <artifactId>snc-npm-parent</artifactId>
+        <version>5.1.0.1</version>
+    </parent>
+
+    <artifactId>metrics-grid-uic</artifactId>
+    <description>12-column metrics layout grid for UI Builder</description>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <scm>
+        <developerConnection>scm:git:${scmUrl}</developerConnection>
+        <tag>master</tag>
+    </scm>
+
+    <properties>
+        <plugin.dir>com.metrics_grid_uic</plugin.dir>
+        <node.verify_cmd>run verify --if-present</node.verify_cmd>
+        <npm.version>8.5.5</npm.version>
+        <node.version>v16.16.0</node.version>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>snc-default-repo</id>
+            <activation>
+                <file>
+                    <missing>/.m2/use_artifact.devsnc.com</missing>
+                </file>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>stable</id>
+                    <url>http://nexus.proxy.devsnc.com/content/groups/stable</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>dev-build</id>
+            <activation>
+                <property><name>!env.CI</name></property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.snc</groupId>
+                                <artifactId>snc-app-descriptors</artifactId>
+                                <version>${project.parent.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>app</id>
+                                <configuration>
+                                    <descriptorRefs>
+                                        <descriptorRef>scoped-app-assembly</descriptorRef>
+                                    </descriptorRefs>
+                                </configuration>
+                                <phase>package</phase>
+                                <goals><goal>single</goal></goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

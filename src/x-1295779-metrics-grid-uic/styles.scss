@@ -1,0 +1,48 @@
+@import '@servicenow/sass-kit/host';
+
+:host {
+	display: block;
+	width: 100%;
+}
+
+.mg-root {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* The grid template / gap / auto-flow are set inline from properties so the
+   12-col layout and width->span mapping stay data-driven (build spec §6). */
+.mg-grid {
+	width: 100%;
+}
+
+.mg-card {
+	display: flex;
+	flex-direction: column;
+	min-width: 0; /* let cards shrink so charts inside can size down */
+}
+
+.mg-card-title {
+	font-size: 14px;
+	font-weight: 600;
+	color: #374151;
+	margin-bottom: 10px;
+}
+
+.mg-card-body {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+}
+
+.mg-card-body > * {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.mg-empty {
+	padding: 24px;
+	text-align: center;
+	opacity: 0.6;
+	font-style: italic;
+}
