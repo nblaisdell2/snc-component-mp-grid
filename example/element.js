@@ -1,8 +1,14 @@
 import '../src/x-1295779-metrics-grid-uic';
+import { mountDevHarness } from './dev-harness';
 
-const el = document.createElement('DIV');
-document.body.appendChild(el);
+mountDevHarness(document.body);
 
-el.innerHTML = `
-	<x-1295779-metrics-grid-uic></x-1295779-metrics-grid-uic>
-`;
+/* ---------------------------------------------------------------------------
+ * Plain-element fallback (no controls harness). To preview the bare component,
+ * comment out the mountDevHarness(...) call above and uncomment this block.
+ * ------------------------------------------------------------------------- */
+// const el = document.createElement('DIV');
+// document.body.appendChild(el);
+// el.innerHTML = `
+// 	<x-1295779-metrics-grid-uic></x-1295779-metrics-grid-uic>
+// `;

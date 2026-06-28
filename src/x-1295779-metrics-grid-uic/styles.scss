@@ -16,6 +16,200 @@
 	width: 100%;
 }
 
+/* ---- Sections ---------------------------------------------------------------
+   Each section: header (collapse toggle + name, optional help text), a rule, then
+   the collapsible body holding the metrics grid. Collapse is a class toggle only
+   (no re-render), so the charts inside are never rebuilt. */
+.mg-section {
+	width: 100%;
+	/* gap + animation duration are data-driven via inline CSS vars (set in grid.js). */
+	margin-bottom: var(--mg-section-gap, 24px);
+	/* Size of the squircle toggle icon and its gap to the name — single source of
+	   truth, reused to indent the help text so it aligns with the name (not the icon). */
+	--mg-icon-size: 16px;
+	--mg-icon-gap: 9px;
+}
+.mg-section:last-child {
+	margin-bottom: 0;
+}
+
+.mg-section-head {
+	display: flex;
+	flex-direction: column;
+}
+/* Name + chevron on the left, the "?" help toggle right beside it. */
+.mg-section-head-row {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+}
+
+/* The toggle is the section name + chevron; borderless so it reads as a heading.
+   Colour/size/weight/family are set inline from properties (defaults below). */
+.mg-section-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--mg-icon-gap, 9px);
+	padding: 0;
+	margin: 0;
+	border: 0;
+	background: none;
+	font: inherit;
+	color: #111827;
+	cursor: pointer;
+	text-align: left;
+}
+.mg-section-toggle:disabled {
+	cursor: default;
+}
+.mg-section-toggle:focus-visible {
+	outline: 2px solid #2563eb;
+	outline-offset: 3px;
+	border-radius: 4px;
+}
+
+.mg-section-name {
+	font-size: 16px;
+	font-weight: 600;
+}
+
+/* Squircle toggle icon: a hollow rounded square holding a minus (expanded) that
+   gains a vertical bar to become a plus (collapsed). It never moves — only the
+   vertical bar fades in/out — and the box stays hollow regardless of the sign.
+   Bars use currentColor, so the icon follows the section name colour. */
+.mg-section-toggle-icon {
+	position: relative;
+	flex: 0 0 auto;
+	width: var(--mg-icon-size, 16px);
+	height: var(--mg-icon-size, 16px);
+	box-sizing: border-box;
+	border: 1px solid currentColor;
+	border-radius: 5px;
+	background: none;
+}
+.mg-section-toggle-icon::before,
+.mg-section-toggle-icon::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	background: currentColor;
+	transform: translate(-50%, -50%);
+}
+/* Horizontal bar — always present (the minus). */
+.mg-section-toggle-icon::before {
+	width: 8px;
+	height: 2px;
+}
+/* Vertical bar — only when collapsed, turning the minus into a plus. */
+.mg-section-toggle-icon::after {
+	width: 2px;
+	height: 8px;
+	opacity: 0;
+	transition: opacity var(--mg-anim, 0.2s) ease;
+}
+.mg-section.mg-collapsed .mg-section-toggle-icon::after {
+	opacity: 1;
+}
+
+/* "?" help toggle — a small circular button beside the section name. Hollow
+   (outlined) when the help text is hidden, solid (filled) when it is showing.
+   The icon colour is data-driven via the --mg-help-icon custom property. */
+.mg-section-help-toggle {
+	flex: 0 0 auto;
+	width: 18px;
+	height: 18px;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--mg-help-icon, #9ca3af);
+	border-radius: 50%;
+	background: none;
+	color: var(--mg-help-icon, #9ca3af);
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+	cursor: pointer;
+	opacity: 0.85;
+	transition: background-color var(--mg-anim, 0.2s) ease, color var(--mg-anim, 0.2s) ease;
+}
+.mg-section-help-toggle:hover {
+	opacity: 1;
+}
+.mg-section-help-toggle:focus-visible {
+	outline: 2px solid #2563eb;
+	outline-offset: 2px;
+}
+/* Solid (filled) when the help text is open. */
+.mg-section.mg-help-open .mg-section-help-toggle {
+	background: var(--mg-help-icon, #9ca3af);
+	color: #fff;
+	opacity: 1;
+}
+
+/* Collapsible help text — same grid-template-rows 0fr<->1fr animation as the body,
+   default closed; opened by adding .mg-help-open. */
+.mg-section-help {
+	display: grid;
+	grid-template-rows: 0fr;
+}
+.mg-section.mg-animate .mg-section-help {
+	transition: grid-template-rows var(--mg-anim, 0.25s) ease;
+}
+.mg-section.mg-help-open .mg-section-help {
+	grid-template-rows: 1fr;
+}
+/* Indent the help text so it lines up with the section name (past the squircle
+   icon + its gap), but only when the icon is present (collapsible sections). */
+.mg-section.mg-collapsible .mg-section-help {
+	padding-left: calc(var(--mg-icon-size, 16px) + var(--mg-icon-gap, 9px));
+}
+.mg-section-help-inner {
+	min-height: 0;
+	overflow: hidden;
+	font-size: 12px;
+	color: #6b7280;
+	line-height: 1.4;
+}
+/* Spacing above the help text lives on the text node so it collapses with the
+   grid-rows track (padding on the clipped inner would otherwise floor it open). */
+.mg-section-help-inner > .mg-section-help-text {
+	display: block;
+	padding-top: 4px;
+}
+
+.mg-section-rule {
+	height: 0;
+	border: 0;
+	border-top: 1px solid #e5e7eb;
+	margin: 10px 0 16px;
+}
+
+/* Collapsible body. The grid-template-rows 1fr -> 0fr trick animates to the exact
+   content height (no magic max-height); the inner wrapper clips during the
+   transition. Animation is gated behind .mg-animate so it can be turned off. */
+.mg-section-body {
+	display: grid;
+	grid-template-rows: 1fr;
+}
+.mg-section.mg-animate .mg-section-body {
+	transition: grid-template-rows var(--mg-anim, 0.25s) ease;
+}
+.mg-section-body-inner {
+	min-height: 0;
+	overflow: hidden;
+}
+.mg-section.mg-animate .mg-section-body-inner {
+	transition: opacity var(--mg-anim, 0.2s) ease;
+}
+.mg-section.mg-collapsed .mg-section-body {
+	grid-template-rows: 0fr;
+}
+.mg-section.mg-collapsed .mg-section-body-inner {
+	opacity: 0;
+}
+
 .mg-card {
 	display: flex;
 	flex-direction: column;
@@ -44,5 +238,16 @@
 	padding: 24px;
 	text-align: center;
 	opacity: 0.6;
+	font-style: italic;
+}
+
+/* Shown when a metric's viz_type has no matching chart component. */
+.mg-card-unknown {
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 16px;
+	font-size: 12px;
+	color: #9ca3af;
 	font-style: italic;
 }
