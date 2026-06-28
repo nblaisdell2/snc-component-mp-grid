@@ -1,7 +1,16 @@
 {
   "components": {
     "x-1295779-metrics-grid-uic": {
-      "innerComponents": [],
+      "innerComponents": [
+        "x-1295779-column-chart-uic",
+        "x-1295779-line-chart-uic",
+        "x-1295779-pie-chart-uic",
+        "x-1295779-scatter-chart-uic",
+        "x-1295779-heatmap-chart-uic",
+        "x-1295779-sankey-chart-uic",
+        "x-1295779-treemap-chart-uic",
+        "x-1295779-wordcloud-chart-uic"
+      ],
       "uiBuilder": {
         "associatedTypes": [
           "global.core",
@@ -9,14 +18,20 @@
         ],
         "label": "Metrics Grid",
         "tileIcon": "./tile-icon/generic-tile-icon.svg",
-        "description": "Lays a metrics array into a 12-column grid (width 25/33/50/75/100 maps to span 3/4/6/9/12), in order, wrapping with grid-auto-flow row dense, and renders a metric-dispatcher per metric. Collapses to a single column below a configurable width. Pure presentation — never fetches its own data.",
+        "description": "Lays a metrics array into a 12-column grid (width 25/33/50/75/100 maps to span 3/4/6/9/12), in order, wrapping with grid-auto-flow row dense, and renders the matching D3 chart component per metric (routing on viz_type). Collapses to a single column below a configurable width. Pure presentation — never fetches its own data.",
         "category": "primitives"
       },
       "properties": [
         {
+          "name": "sections",
+          "label": "Data · Sections",
+          "description": "Array of dashboard sections — the resolver payload's `sections` (build spec §5.2). Each: { id, name, help_text, order, metrics: [...] }. Each section renders a collapsible header (name + optional help text + toggle) and a rule, then its metrics in the 12-col grid. Leave empty to fall back to the flat `metrics` array, then to built-in sample sections.",
+          "fieldType": "json"
+        },
+        {
           "name": "metrics",
-          "label": "Data · Metrics",
-          "description": "Array of metrics to lay out — the resolver payload's `metrics` (build spec §5.2). Each item: { id, title, order, width, viz_type, display_config, data }. The grid sorts by `order` and passes each item to a metric-dispatcher. Leave empty to show built-in sample metrics.",
+          "label": "Data · Metrics (flat, fallback)",
+          "description": "Flat array of metrics — the resolver payload's `metrics` (build spec §5.2). Each item: { id, title, order, width, viz_type, display_config, data }. Used only when `sections` is empty: the grid wraps it into a single untitled section. The grid sorts by `order`, maps `width`→span, and renders the D3 chart matching each `viz_type`.",
           "fieldType": "json"
         },
         {
@@ -36,21 +51,126 @@
         {
           "name": "collapseBelow",
           "label": "Layout · Collapse below (px)",
-          "description": "When the grid's own width is below this many pixels, every card collapses to full width (single column). 0 = never collapse.",
+          "description": "When a section grid's own width is below this many pixels, every card collapses to full width (single column). 0 = never collapse.",
           "fieldType": "number",
           "defaultValue": 900
         },
         {
-          "name": "dispatcherTag",
-          "label": "Routing · Dispatcher tag",
-          "description": "Custom element tag used to render each metric. Defaults to the metric-dispatcher.",
+          "name": "sectionsCollapsible",
+          "label": "Sections · Collapsible",
+          "description": "Allow each section header to collapse/expand its widgets on click.",
+          "fieldType": "boolean",
+          "defaultValue": true
+        },
+        {
+          "name": "defaultCollapsed",
+          "label": "Sections · Start collapsed",
+          "description": "Render every section collapsed on first load. (Charts in a section that starts collapsed may need re-measuring on first expand.)",
+          "fieldType": "boolean",
+          "defaultValue": false
+        },
+        {
+          "name": "animateSections",
+          "label": "Sections · Animate expand/collapse",
+          "description": "Animate the section expand/collapse (and help text) transition. Off = instant show/hide.",
+          "fieldType": "boolean",
+          "defaultValue": true
+        },
+        {
+          "name": "sectionAnimationMs",
+          "label": "Sections · Animation duration (ms)",
+          "description": "Duration of the section collapse and help-text transitions, in milliseconds.",
+          "fieldType": "number",
+          "defaultValue": 250
+        },
+        {
+          "name": "helpDefaultVisible",
+          "label": "Sections · Help shown by default",
+          "description": "Whether each section's help text starts expanded. Off = hidden until the user clicks the ? button.",
+          "fieldType": "boolean",
+          "defaultValue": false
+        },
+        {
+          "name": "showSectionHelpToggle",
+          "label": "Sections · Show help (?) button",
+          "description": "Render the ? button that toggles a section's help text. The button only appears when the section actually has help text.",
+          "fieldType": "boolean",
+          "defaultValue": true
+        },
+        {
+          "name": "sectionNameColor",
+          "label": "Sections · Name color",
+          "description": "Section heading (and chevron) text color.",
           "fieldType": "string",
-          "defaultValue": "x-1295779-metric-dispatcher-uic"
+          "defaultValue": "#111827"
+        },
+        {
+          "name": "sectionNameFontFamily",
+          "label": "Sections · Name font family",
+          "description": "Section heading font-family. Leave blank to inherit.",
+          "fieldType": "string",
+          "defaultValue": ""
+        },
+        {
+          "name": "sectionNameFontSize",
+          "label": "Sections · Name font size",
+          "description": "Section heading font size. CSS length; a bare number is treated as pixels.",
+          "fieldType": "string",
+          "defaultValue": "16px"
+        },
+        {
+          "name": "sectionNameFontWeight",
+          "label": "Sections · Name font weight",
+          "description": "Section heading font weight (e.g. 400, 600, 700, bold).",
+          "fieldType": "string",
+          "defaultValue": "600"
+        },
+        {
+          "name": "sectionHelpColor",
+          "label": "Sections · Help text color",
+          "description": "Color of the section help text.",
+          "fieldType": "string",
+          "defaultValue": "#6b7280"
+        },
+        {
+          "name": "sectionHelpFontSize",
+          "label": "Sections · Help text font size",
+          "description": "Help text font size. CSS length; a bare number is treated as pixels.",
+          "fieldType": "string",
+          "defaultValue": "12px"
+        },
+        {
+          "name": "helpIconColor",
+          "label": "Sections · Help (?) icon color",
+          "description": "Color of the ? help icon. The icon is hollow (outlined) when the help text is hidden and solid (filled with this color) when it is showing.",
+          "fieldType": "string",
+          "defaultValue": "#9ca3af"
+        },
+        {
+          "name": "ruleColor",
+          "label": "Sections · Rule color",
+          "description": "Color of the horizontal rule under each section header.",
+          "fieldType": "string",
+          "defaultValue": "#e5e7eb"
+        },
+        {
+          "name": "ruleThickness",
+          "label": "Sections · Rule thickness (px)",
+          "description": "Thickness of the horizontal rule under each section header. 0 = hide the rule.",
+          "fieldType": "number",
+          "defaultValue": 1
+        },
+        {
+          "name": "sectionSpacing",
+          "label": "Sections · Spacing between sections",
+          "description": "Vertical gap between sections. CSS length; a bare number is treated as pixels.",
+          "fieldType": "string",
+          "defaultValue": "24px"
         },
         {
           "name": "vizMap",
           "label": "Routing · Viz type → component",
-          "description": "Optional viz_type → component-tag overrides passed through to each dispatcher (see Metric Dispatcher). Leave blank to use the dispatcher defaults.",
+          "description": "Optional viz_type → chart-component-tag overrides, merged over the built-in map (e.g. {\"column_chart\":\"x-1295779-column-chart-uic\"}). Leave blank to use the defaults.",
           "fieldType": "json"
         },
         {

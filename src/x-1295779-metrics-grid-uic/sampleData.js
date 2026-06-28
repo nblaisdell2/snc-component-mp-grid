@@ -5,20 +5,20 @@
  * (build spec §6).
  *
  * Each item mirrors a resolver `metrics[]` entry (build spec §5.2): the metric
- * definition fields plus its hydrated `data` envelope. The grid passes each item
- * straight to a metric-dispatcher, which routes `viz_type` to one of the 8 D3
- * chart components and hands it the envelope as-is — so each `data` shape below
- * matches exactly what its target component expects:
+ * definition fields plus its hydrated `data` envelope. The grid routes `viz_type`
+ * to one of the 8 D3 chart components (see VIZ_TO_TAG in grid.js) and hands it the
+ * envelope as-is — so each `data` shape below matches exactly what its target
+ * component expects:
  *
- *   viz_type        component             data envelope
- *   column_chart    column-chart-uic      { categories, series: [{ name, values }] }
- *   line_chart      line-chart-uic        { categories, series: [{ name, values }] }
- *   pie_chart       pie-chart-uic         { slices: [{ label, value }] }
- *   scatter_chart   scatter-chart-uic     { series: [{ name, points: [{ x, y }] }] }
- *   heatmap         heatmap-chart-uic     { x_labels, y_labels, values: [[]] }
- *   sankey          sankey-chart-uic      { nodes: [{ name }], links: [{ source, target, value }] }
- *   treemap         treemap-chart-uic     { name, children: [{ name, value, children? }] }
- *   wordcloud       wordcloud-chart-uic   { words: [{ text, size }] }
+ *   viz_type        component                       data envelope
+ *   column_chart    x-1295779-column-chart-uic      { categories, series: [{ name, values }] }
+ *   line_chart      x-1295779-line-chart-uic        { categories, series: [{ name, values }] }
+ *   pie_chart       x-1295779-pie-chart-uic         { slices: [{ label, value }] }
+ *   scatter_chart   x-1295779-scatter-chart-uic     { series: [{ name, points: [{ x, y }] }] }
+ *   heatmap         x-1295779-heatmap-chart-uic     { x_labels, y_labels, values: [[]] }
+ *   sankey          x-1295779-sankey-chart-uic      { nodes: [{ name }], links: [{ source, target, value }] }
+ *   treemap         x-1295779-treemap-chart-uic     { name, children: [{ name, value, children? }] }
+ *   wordcloud       x-1295779-wordcloud-chart-uic   { words: [{ text, size }] }
  *
  * The grid is data-shape agnostic — it forwards the envelope verbatim — so these
  * exist purely to demonstrate the layout against the real component contract.
@@ -184,5 +184,31 @@ export const SAMPLE_METRICS = [
 				{ source: 2, target: 4, value: 16 }
 			]
 		}
+	}
+];
+
+/**
+ * Built-in sample SECTIONS so the grid demonstrates the collapsible-section layout the
+ * moment it is dropped on a page (before `sections` is bound to the resolver payload's
+ * `sections`). Each section mirrors a resolver section (build spec §5.2): the section
+ * fields plus its `metrics[]`. Split from SAMPLE_METRICS (so the data stays in one
+ * place) into a section with help text and one without, to exercise the header, help
+ * text, rule, and collapse chrome.
+ */
+const byIds = (...ids) => SAMPLE_METRICS.filter((m) => ids.includes(m.id));
+
+export const SAMPLE_SECTIONS = [
+	{
+		id: 'sec-charts',
+		name: 'Charts & Distributions',
+		help_text: 'Visual breakdowns across the book of business.',
+		order: 10,
+		metrics: byIds('m1', 'm2', 'm3', 'm6')
+	},
+	{
+		id: 'sec-flows',
+		name: 'Flows & Hierarchies',
+		order: 20,
+		metrics: byIds('m4', 'm5', 'm7', 'm8')
 	}
 ];

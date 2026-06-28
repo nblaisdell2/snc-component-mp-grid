@@ -16,7 +16,15 @@
   "dependencies": {
     "@servicenow/sass-kit": "latest",
     "@servicenow/ui-core": "24.1.1",
-    "@servicenow/ui-renderer-snabbdom": "24.1.1"
+    "@servicenow/ui-renderer-snabbdom": "24.1.1",
+    "column-chart-uic": "file:../now-experience-cli-components",
+    "line-chart-uic": "file:../snc-component-d3-line",
+    "pie-chart-uic": "file:../snc-component-d3-pie",
+    "scatter-chart-uic": "file:../snc-component-d3-scatter",
+    "heatmap-chart-uic": "file:../snc-component-d3-heatmap",
+    "sankey-chart-uic": "file:../snc-component-d3-sankey",
+    "treemap-chart-uic": "file:../snc-component-d3-treemap",
+    "wordcloud-chart-uic": "file:../snc-component-d3-wordcloud"
   },
   "devDependencies": {
     "@babel/runtime": "7.25.7",
